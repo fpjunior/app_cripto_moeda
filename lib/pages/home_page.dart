@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: PageView(
         controller: pc,
-        children: const [
+        children: [
           MoedasPage(),
           FavoritasPage(),
         ],

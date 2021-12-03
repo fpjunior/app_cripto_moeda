@@ -1,11 +1,19 @@
+// import 'package:cripto_moedas/configs/app_settings.dart';
+// import 'package:cripto_moedas/models/moeda.dart';
+// import 'package:cripto_moedas/pages/moedas_detalhes_page.dart';
+// import 'package:cripto_moedas/repositories/favoritas_repository.dart';
+// import 'package:cripto_moedas/repositories/moeda_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aula1/configs/app_settings.dart';
 import 'package:flutter_aula1/models/moeda.dart';
 import 'package:flutter_aula1/pages/moedas_detalhes_page.dart';
+import 'package:flutter_aula1/repositories/favoritas_repository.dart';
 import 'package:flutter_aula1/repositories/moeda_repository.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MoedasPage extends StatefulWidget {
-  const MoedasPage({Key? key}) : super(key: key);
+  MoedasPage({Key? key}) : super(key: key);
 
   @override
   _MoedasPageState createState() => _MoedasPageState();
@@ -13,32 +21,63 @@ class MoedasPage extends StatefulWidget {
 
 class _MoedasPageState extends State<MoedasPage> {
   final tabela = MoedaRepository.tabela;
-  NumberFormat real = NumberFormat.currency(locale: 'pt_BR', name: 'R\$');
+  late NumberFormat real;
+  late Map<String, String> loc;
   List<Moeda> selecionadas = [];
+  late FavoritasRepository favoritas;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
+  changeLanguageButton() {
+    final locale = loc['locale'] == 'pt_BR' ? 'en_US' : 'pt_BR';
+    final name = loc['locale'] == 'pt_BR' ? '\$' : 'R\$';
+
+    return PopupMenuButton(
+      icon: Icon(Icons.language),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            child: ListTile(
+          leading: Icon(Icons.swap_vert),
+          title: Text('Usar $locale'),
+          onTap: () {
+            context.read<AppSettings>().setLocale(locale, name);
+            Navigator.pop(context);
+          },
+        )),
+      ],
+    );
+  }
 
   appBarDinamica() {
     if (selecionadas.isEmpty) {
       return AppBar(
-        title: Container(
-            alignment: Alignment.center, child: const Text('Cripto Moedas')),
+        title: Text('Cripto Moedas'),
+        actions: [
+          changeLanguageButton(),
+        ],
       );
     } else {
       return AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
-            setState(() {
-              selecionadas = [];
-            });
+            limparSelecionadas();
           },
         ),
-        title: Container(
-            alignment: Alignment.center,
-            child: Text('${selecionadas.length} selecionadas')),
-        backgroundColor: Colors.blueGrey[400],
+        title: Text('${selecionadas.length} selecionadas'),
+        backgroundColor: Colors.blueGrey[50],
         elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.black87),
-        toolbarTextStyle: const TextStyle(color: Colors.black87),
+        iconTheme: IconThemeData(color: Colors.black87),
+        textTheme: TextTheme(
+          headline6: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       );
     }
   }
@@ -52,73 +91,51 @@ class _MoedasPageState extends State<MoedasPage> {
     );
   }
 
+  limparSelecionadas() {
+    setState(() {
+      selecionadas = [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // favoritas = Provider.of<FavoritasRepository>(context);
+    favoritas = context.watch<FavoritasRepository>();
+    readNumberFormat();
+
     return Scaffold(
-      bottomNavigationBar: SizedBox(
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            selecionadas.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      setState(() {
-                        for (var moeda in selecionadas) {
-                          tabela.remove(moeda);
-                        }
-                        selecionadas = [];
-                      });
-                    },
-                  )
-                : Container(),
-            // TextButton(
-            //   child: const Text('Limpar'),
-            //   onPressed: () {
-            //     setState(() {
-            //       selecionadas = [];
-            //     });
-            //   },
-            // ),
-            // TextButton(
-            //   child: const Text('Salvar'),
-            //   onPressed: () {
-            //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            //       content: Text('Moeda salva com sucesso'),
-            //       duration: Duration(seconds: 2),
-            //     ));
-            //   },
-            // ),
-          ],
-        ),
-      ),
       appBar: appBarDinamica(),
       body: ListView.separated(
         itemBuilder: (BuildContext context, int moeda) {
-          var textStyle = const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-          );
-          var listTile = ListTile(
-            shape: const RoundedRectangleBorder(
+          return ListTile(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             leading: (selecionadas.contains(tabela[moeda]))
-                ? const CircleAvatar(
+                ? CircleAvatar(
                     child: Icon(Icons.check),
                   )
                 : SizedBox(
                     child: Image.asset(tabela[moeda].icone),
                     width: 40,
                   ),
-            title: Text(
-              tabela[moeda].nome,
-              style: textStyle,
+            title: Row(
+              children: [
+                Text(
+                  tabela[moeda].nome,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (favoritas.lista
+                    .any((fav) => fav.sigla == tabela[moeda].sigla))
+                  Icon(Icons.circle, color: Colors.amber, size: 8),
+              ],
             ),
             trailing: Text(
               real.format(tabela[moeda].preco),
-              style: const TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: 15),
             ),
             selected: selecionadas.contains(tabela[moeda]),
             selectedTileColor: Colors.indigo[50],
@@ -131,24 +148,28 @@ class _MoedasPageState extends State<MoedasPage> {
             },
             onTap: () => mostrarDetalhes(tabela[moeda]),
           );
-          return listTile;
         },
-        padding: const EdgeInsets.all(16),
-        separatorBuilder: (_, ___) => const Divider(),
+        padding: EdgeInsets.all(16),
+        separatorBuilder: (_, ___) => Divider(),
         itemCount: tabela.length,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: selecionadas.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: () {},
-              label: const Text(
-                'Favoritar ',
-                style: TextStyle(fontSize: 15, letterSpacing: 0),
+              onPressed: () {
+                favoritas.saveAll(selecionadas);
+                limparSelecionadas();
+              },
+              icon: Icon(Icons.star),
+              label: Text(
+                'FAVORITAR',
+                style: TextStyle(
+                  letterSpacing: 0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              icon: const Icon(Icons.favorite),
-              backgroundColor: Colors.blue[400],
             )
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
