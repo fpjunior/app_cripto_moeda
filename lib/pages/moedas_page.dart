@@ -1,8 +1,3 @@
-// import 'package:cripto_moedas/configs/app_settings.dart';
-// import 'package:cripto_moedas/models/moeda.dart';
-// import 'package:cripto_moedas/pages/moedas_detalhes_page.dart';
-// import 'package:cripto_moedas/repositories/favoritas_repository.dart';
-// import 'package:cripto_moedas/repositories/moeda_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aula1/configs/app_settings.dart';
 import 'package:flutter_aula1/models/moeda.dart';

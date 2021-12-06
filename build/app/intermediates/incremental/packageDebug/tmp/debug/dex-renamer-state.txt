@@ -1,4 +1,4 @@
-#Thu Dec 02 23:07:02 BRT 2021
+#Sun Dec 05 21:47:24 BRT 2021
 base.0=/Users/fernandopedro/flutter_aula1/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
 renamed.0=classes.dex
 path.0=classes.dex

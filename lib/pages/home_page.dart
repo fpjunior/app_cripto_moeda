@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_aula1/pages/carteira_page.dart';
+import 'package:flutter_aula1/pages/confguracoes_page.dart';
 import 'package:flutter_aula1/pages/favoritas_page.dart';
 import 'package:flutter_aula1/pages/moedas_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -16,12 +18,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    pc = PageController(
-      initialPage: paginaAtual,
-    );
+    pc = PageController(initialPage: paginaAtual);
   }
 
-  void setPaginaAtual(pagina) {
+  setPaginaAtual(pagina) {
     setState(() {
       paginaAtual = pagina;
     });
@@ -35,30 +35,29 @@ class _HomePageState extends State<HomePage> {
         children: [
           MoedasPage(),
           FavoritasPage(),
+          CarteiraPage(),
+          ConfiguracoesPage(),
         ],
         onPageChanged: setPaginaAtual,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
-        onTap: (page) {
-          setState(() {
-            paginaAtual = page;
-            pc.animateToPage(page,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease);
-          });
-        },
-        items: const [
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Todas'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Favoritas'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
-            label: 'Moedas',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favoritas',
-          ),
+              icon: Icon(Icons.account_balance_wallet), label: 'Carteira'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Conta'),
         ],
-        backgroundColor: Colors.grey[300],
+        onTap: (pagina) {
+          pc.animateToPage(
+            pagina,
+            duration: Duration(milliseconds: 400),
+            curve: Curves.ease,
+          );
+        },
+        // backgroundColor: Colors.grey[100],
       ),
     );
   }
