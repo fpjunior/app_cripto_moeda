@@ -32,7 +32,7 @@ class _MoedaCardState extends State<MoedaCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MoedasDetalhes(moeda: widget.moeda),
+        builder: (_) => MoedasDetalhesPage(moeda: widget.moeda),
       ),
     );
   }

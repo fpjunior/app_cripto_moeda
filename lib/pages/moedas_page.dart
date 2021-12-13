@@ -81,7 +81,7 @@ class _MoedasPageState extends State<MoedasPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MoedasDetalhes(moeda: moeda),
+        builder: (_) => MoedasDetalhesPage(moeda: moeda),
       ),
     );
   }

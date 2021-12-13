@@ -1,54 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_aula1/configs/app_settings.dart';
 import 'package:flutter_aula1/models/moeda.dart';
+import 'package:flutter_aula1/repositories/conta_repository.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class MoedasDetalhes extends StatefulWidget {
-  final Moeda moeda;
+class MoedasDetalhesPage extends StatefulWidget {
+  Moeda moeda;
 
-  const MoedasDetalhes({Key? key, required this.moeda}) : super(key: key);
+  MoedasDetalhesPage({Key? key, required this.moeda}) : super(key: key);
 
   @override
-  _MoedasDetalhesState createState() => _MoedasDetalhesState();
+  _MoedasDetalhesPageState createState() => _MoedasDetalhesPageState();
 }
 
-class _MoedasDetalhesState extends State<MoedasDetalhes> {
-  NumberFormat real = NumberFormat.currency(locale: 'pt_BR', name: 'R\$');
+class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
+  late NumberFormat real;
   final _form = GlobalKey<FormState>();
   final _valor = TextEditingController();
   double quantidade = 0;
+  late ContaRepository conta;
 
-  comprar() {
+  comprar() async {
     if (_form.currentState!.validate()) {
-      // salvar a compra
-      Navigator.pop(context, quantidade);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Compra realizada com sucesso!'),
-        duration: Duration(seconds: 2),
-      ));
+      await conta.comprar(widget.moeda, double.parse(_valor.text));
 
-      setState(() {
-        quantidade = double.parse(_valor.text);
-      });
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Compra realizada com sucesso!')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(
-      fontSize: 20,
-      color: Colors.teal,
-    );
+    readNumberFormat();
+    conta = Provider.of<ContaRepository>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.moeda.nome),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: EdgeInsets.only(bottom: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -76,26 +76,31 @@ class _MoedasDetalhesState extends State<MoedasDetalhes> {
                     child: Container(
                       child: Text(
                         '$quantidade ${widget.moeda.sigla}',
-                        style: textStyle,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.teal,
+                        ),
                       ),
-                      margin: const EdgeInsets.only(bottom: 24),
-                      padding: const EdgeInsets.all(12),
+                      margin: EdgeInsets.only(bottom: 24),
+                      // padding: EdgeInsets.all(12),
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.teal.withOpacity(0.05),
-                      ),
-                    ))
-                : Container(margin: const EdgeInsets.only(bottom: 24)),
+                      // decoration: BoxDecoration(
+                      //   color: Colors.teal.withOpacity(0.05),
+                      // ),
+                    ),
+                  )
+                : Container(
+                    margin: EdgeInsets.only(bottom: 24),
+                  ),
             Form(
               key: _form,
               child: TextFormField(
                 controller: _valor,
-                style: const TextStyle(fontSize: 22),
-                decoration: const InputDecoration(
+                style: TextStyle(fontSize: 22),
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Valor',
-                  labelStyle: TextStyle(fontSize: 18),
-                  prefixIcon: Icon(Icons.attach_money),
+                  prefixIcon: Icon(Icons.monetization_on_outlined),
                   suffix: Text(
                     'reais',
                     style: TextStyle(fontSize: 14),
@@ -105,11 +110,11 @@ class _MoedasDetalhesState extends State<MoedasDetalhes> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Informe um valor';
-                  } else if (double.parse(value) <= 0) {
-                    return 'Informe um valor maior que zero';
+                    return 'Informe o valor da compra';
                   } else if (double.parse(value) < 50) {
                     return 'Compra mínima é R\$ 50,00';
+                  } else if (double.parse(value) > conta.saldo) {
+                    return 'Você não tem saldo suficiente';
                   }
                   return null;
                 },
@@ -124,15 +129,15 @@ class _MoedasDetalhesState extends State<MoedasDetalhes> {
             ),
             Container(
               alignment: Alignment.bottomCenter,
-              margin: const EdgeInsets.only(top: 24),
+              margin: EdgeInsets.only(top: 24),
               child: ElevatedButton(
                 onPressed: comprar,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.shopping_cart),
+                  children: [
+                    Icon(Icons.check),
                     Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16),
                       child: Text(
                         'Comprar',
                         style: TextStyle(fontSize: 20),
@@ -146,5 +151,10 @@ class _MoedasDetalhesState extends State<MoedasDetalhes> {
         ),
       ),
     );
+  }
+
+  readNumberFormat() {
+    final loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
   }
 }
