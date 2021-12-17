@@ -1,8 +1,8 @@
-import 'package:flutter_aula1/models/moeda.dart';
+import 'package:flutter_aula1/models/produto.dart';
 
 class Posicao {
-  Moeda moeda;
+  Produto produto;
   double quantidade;
 
-  Posicao({required this.moeda, required this.quantidade});
+  Posicao({required this.produto, required this.quantidade});
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_aula1/configs/app_settings.dart';
-import 'package:flutter_aula1/models/moeda.dart';
-import 'package:flutter_aula1/pages/moedas_detalhes_page.dart';
+import 'package:flutter_aula1/models/produto.dart';
+import 'package:flutter_aula1/pages/produtos_detalhes_page.dart';
 import 'package:flutter_aula1/repositories/favoritas_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MoedaCard extends StatefulWidget {
-  Moeda moeda;
+  Produto produto;
 
-  MoedaCard({Key? key, required this.moeda}) : super(key: key);
+  MoedaCard({Key? key, required this.produto}) : super(key: key);
 
   @override
   _MoedaCardState createState() => _MoedaCardState();
@@ -32,7 +32,7 @@ class _MoedaCardState extends State<MoedaCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MoedasDetalhesPage(moeda: widget.moeda),
+        builder: (_) => ProdutosDetalhesPage(produto: widget.produto),
       ),
     );
   }
@@ -50,7 +50,7 @@ class _MoedaCardState extends State<MoedaCard> {
           child: Row(
             children: [
               Image.asset(
-                widget.moeda.icone,
+                widget.produto.urlImage,
                 height: 40,
               ),
               Expanded(
@@ -60,14 +60,14 @@ class _MoedaCardState extends State<MoedaCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.moeda.nome,
+                        widget.produto.nome,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        widget.moeda.sigla,
+                        widget.produto.descricao,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.black45,
@@ -87,7 +87,7 @@ class _MoedaCardState extends State<MoedaCard> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  real.format(widget.moeda.preco),
+                  real.format(widget.produto.preco),
                   style: TextStyle(
                     fontSize: 16,
                     color: precoColor['down'],
@@ -104,7 +104,7 @@ class _MoedaCardState extends State<MoedaCard> {
                       onTap: () {
                         Navigator.pop(context);
                         Provider.of<FavoritasRepository>(context, listen: false)
-                            .remove(widget.moeda);
+                            .remove(widget.produto);
                       },
                     ),
                   ),

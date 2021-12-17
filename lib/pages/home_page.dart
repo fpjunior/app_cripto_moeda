@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_aula1/pages/carteira_page.dart';
 import 'package:flutter_aula1/pages/confguracoes_page.dart';
 import 'package:flutter_aula1/pages/favoritas_page.dart';
-import 'package:flutter_aula1/pages/moedas_page.dart';
+import 'package:flutter_aula1/pages/produtos_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: pc,
         children: [
-          MoedasPage(),
+          ProdutosPage(),
           FavoritasPage(),
           CarteiraPage(),
           ConfiguracoesPage(),

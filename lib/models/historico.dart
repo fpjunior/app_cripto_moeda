@@ -1,16 +1,16 @@
-import 'package:flutter_aula1/models/moeda.dart';
+import 'produto.dart';
 
 class Historico {
   DateTime dataOperacao;
   String tipoOperacao;
-  Moeda moeda;
+  Produto produto;
   double valor;
   double quantidade;
 
   Historico({
     required this.dataOperacao,
     required this.tipoOperacao,
-    required this.moeda,
+    required this.produto,
     required this.valor,
     required this.quantidade,
   });

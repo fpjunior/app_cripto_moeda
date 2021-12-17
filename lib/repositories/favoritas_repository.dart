@@ -1,12 +1,12 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_aula1/adapters/moeda_hiver_adapter.dart';
-import 'package:flutter_aula1/models/moeda.dart';
+import 'package:flutter_aula1/adapters/produto_hiver_adapter.dart';
+import 'package:flutter_aula1/models/produto.dart';
 import 'package:hive/hive.dart';
 
 class FavoritasRepository extends ChangeNotifier {
-  List<Moeda> _lista = [];
+  List<Produto> _lista = [];
   late LazyBox box;
 
   FavoritasRepository() {
@@ -20,32 +20,32 @@ class FavoritasRepository extends ChangeNotifier {
 
   _openBox() async {
     Hive.registerAdapter(MoedaHiveAdapter());
-    box = await Hive.openLazyBox<Moeda>('moedas_favoritas');
+    box = await Hive.openLazyBox<Produto>('moedas_favoritas');
   }
 
   _readFavoritas() {
-    box.keys.forEach((moeda) async {
-      Moeda m = await box.get(moeda);
+    box.keys.forEach((produto) async {
+      Produto m = await box.get(produto);
       _lista.add(m);
       notifyListeners();
     });
   }
 
-  UnmodifiableListView<Moeda> get lista => UnmodifiableListView(_lista);
+  UnmodifiableListView<Produto> get lista => UnmodifiableListView(_lista);
 
-  saveAll(List<Moeda> moedas) {
-    moedas.forEach((moeda) {
-      if (!_lista.any((atual) => atual.sigla == moeda.sigla)) {
-        _lista.add(moeda);
-        box.put(moeda.sigla, moeda);
+  saveAll(List<Produto> produtos) {
+    produtos.forEach((produto) {
+      if (!_lista.any((atual) => atual.descricao == produto.descricao)) {
+        _lista.add(produto);
+        box.put(produto.descricao, produto);
       }
     });
     notifyListeners();
   }
 
-  remove(Moeda moeda) {
-    _lista.remove(moeda);
-    box.delete(moeda.sigla);
+  remove(Produto produto) {
+    _lista.remove(produto);
+    box.delete(produto.descricao);
     notifyListeners();
   }
 }

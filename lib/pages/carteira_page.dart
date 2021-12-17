@@ -71,10 +71,10 @@ class _CarteiraPageState extends State<CarteiraPage> {
 
     for (var operacao in historico) {
       widgets.add(ListTile(
-        title: Text(operacao.moeda.nome),
+        title: Text(operacao.produto.nome),
         subtitle: Text(date.format(operacao.dataOperacao)),
         trailing: Text(
-            (operacao.moeda.preco * operacao.quantidade).toStringAsFixed(2)),
+            (operacao.produto.preco * operacao.quantidade).toStringAsFixed(2)),
       ));
       widgets.add(Divider());
     }
@@ -90,7 +90,7 @@ class _CarteiraPageState extends State<CarteiraPage> {
     setState(() {
       totalCarteira = conta.saldo;
       for (var posicao in carteiraList) {
-        totalCarteira += posicao.moeda.preco * posicao.quantidade;
+        totalCarteira += posicao.produto.preco * posicao.quantidade;
       }
     });
   }
@@ -154,7 +154,7 @@ class _CarteiraPageState extends State<CarteiraPage> {
       double porcentagem = 0;
       if (!isSaldo) {
         porcentagem =
-            carteira[i].moeda.preco * carteira[i].quantidade / totalCarteira;
+            carteira[i].produto.preco * carteira[i].quantidade / totalCarteira;
       } else {
         porcentagem = (conta.saldo > 0) ? conta.saldo / totalCarteira : 0;
       }
@@ -181,8 +181,8 @@ class _CarteiraPageState extends State<CarteiraPage> {
       graficoLabel = 'Saldo';
       graficoValor = conta.saldo;
     } else {
-      graficoLabel = carteira[index].moeda.nome;
-      graficoValor = carteira[index].moeda.preco * carteira[index].quantidade;
+      graficoLabel = carteira[index].produto.nome;
+      graficoValor = carteira[index].produto.preco * carteira[index].quantidade;
     }
   }
 }

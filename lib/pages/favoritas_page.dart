@@ -15,7 +15,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Moedas Favoritas'),
+        title: Text('Produtos Favoritas'),
       ),
       body: Container(
         color: Colors.indigo.withOpacity(0.05),
@@ -26,12 +26,12 @@ class _FavoritasPageState extends State<FavoritasPage> {
             return favoritas.lista.isEmpty
                 ? ListTile(
                     leading: Icon(Icons.star),
-                    title: Text('Ainda não há moedas favoritas'),
+                    title: Text('Ainda não há produtos favoritas'),
                   )
                 : ListView.builder(
                     itemCount: favoritas.lista.length,
                     itemBuilder: (_, index) {
-                      return MoedaCard(moeda: favoritas.lista[index]);
+                      return MoedaCard(produto: favoritas.lista[index]);
                     },
                   );
           },
